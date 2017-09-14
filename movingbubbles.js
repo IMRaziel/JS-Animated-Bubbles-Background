@@ -9,7 +9,7 @@
 var bubbleOptions = {
 	maxBubbles     : 250,   //A bubble ceiling, for high resolution monitors
 	timer          : -1,    //The interval time
-	tick           : 100,   //The tick speed
+	tick           : 1000/60,   //The tick speed
 	bubbles        : [],    //The array of bubbles
 	hue            : 188,   //The hue
 	hueRand        : 20,    //The hue variance
@@ -159,6 +159,9 @@ Bubble.prototype.move = function() {
 		//Set opacity
 		if(this.time < 11) this.e.style.opacity = (this.time / 10);
 		
+		this.xVel = -(this.x - Bubble.mouse_x) * 0.0005;
+		this.yVel = -(this.y - Bubble.mouse_y) * 0.0005;
+
 		//Change position
 		this.x += this.xVel;
 		this.y += this.yVel;
@@ -171,3 +174,33 @@ Bubble.prototype.move = function() {
 		this.time++;
 	}
 }
+Bubble.mouse_x = 0;
+Bubble.mouse_y = 0;
+
+(function() {
+	document.onmousemove = handleMouseMove;
+	function handleMouseMove(event) {
+			var dot, eventDoc, doc, body, pageX, pageY;
+
+			event = event || window.event; // IE-ism
+
+			// If pageX/Y aren't available and clientX/Y are,
+			// calculate pageX/Y - logic taken from jQuery.
+			// (This is to support old IE)
+			if (event.pageX == null && event.clientX != null) {
+					eventDoc = (event.target && event.target.ownerDocument) || document;
+					doc = eventDoc.documentElement;
+					body = eventDoc.body;
+
+					event.pageX = event.clientX +
+						(doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+						(doc && doc.clientLeft || body && body.clientLeft || 0);
+					event.pageY = event.clientY +
+						(doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+						(doc && doc.clientTop  || body && body.clientTop  || 0 );
+			}
+
+			Bubble.mouse_x = event.pageX;
+			Bubble.mouse_y = event.pageY;
+	}
+})();
