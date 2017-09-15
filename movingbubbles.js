@@ -28,8 +28,12 @@ var bubbleOptions = {
 		if(!tick) tick = this.tick;
 		if(!this.bubbles.length) this.bubbles = instantiateBubbles();
 		var bubbles = this.bubbles;
+		
 		this.timer = window.setInterval(
 			function() {
+				Bubble.vec_x *= 0.99;
+				Bubble.vec_y *= 0.99;
+	
 				for(var i = 0; i < bubbles.length; i++)
 					bubbles[i].move();
 			},
@@ -111,8 +115,8 @@ Bubble.prototype.create = function() {
 	this.y = Math.random() * window.innerHeight;
 	
 	//Random velocity
-	this.xVel = (Math.random() * 4) - 2;
-	this.yVel = (Math.random() * 4) - 2;
+	this.xVel = ((Math.random() * 4) - 2) * 0.2;
+	this.yVel = ((Math.random() * 4) - 2) * 0.2;
 
 	//Set the size
 	this.diam = Math.floor(Math.random() * 160) + 40;
@@ -159,12 +163,9 @@ Bubble.prototype.move = function() {
 		//Set opacity
 		if(this.time < 11) this.e.style.opacity = (this.time / 10);
 		
-		this.xVel = -(this.x - Bubble.mouse_x) * 0.0005;
-		this.yVel = -(this.y - Bubble.mouse_y) * 0.0005;
-
 		//Change position
-		this.x += this.xVel;
-		this.y += this.yVel;
+		this.x += this.xVel - Bubble.vec_x;
+		this.y += this.yVel - Bubble.vec_y;
 		
 		//Set the position via CSS
 		this.e.style.left = Math.floor(this.x) + "px";
@@ -176,6 +177,10 @@ Bubble.prototype.move = function() {
 }
 Bubble.mouse_x = 0;
 Bubble.mouse_y = 0;
+Bubble.mouse_x0 = 0;
+Bubble.mouse_y0 = 0;
+Bubble.vec_x = 0;
+Bubble.vec_y = 0;
 
 (function() {
 	document.onmousemove = handleMouseMove;
@@ -200,7 +205,11 @@ Bubble.mouse_y = 0;
 						(doc && doc.clientTop  || body && body.clientTop  || 0 );
 			}
 
+			Bubble.mouse_x0 = Bubble.mouse_x == 0 ? event.pageX : Bubble.mouse_x;
+			Bubble.mouse_y0 = Bubble.mouse_y == 0 ? event.pageY : Bubble.mouse_y;
 			Bubble.mouse_x = event.pageX;
 			Bubble.mouse_y = event.pageY;
+			Bubble.vec_x += (Bubble.mouse_x0 - Bubble.mouse_x) * 0.002;
+			Bubble.vec_y += (Bubble.mouse_y0 - Bubble.mouse_y) * 0.002;
 	}
 })();
